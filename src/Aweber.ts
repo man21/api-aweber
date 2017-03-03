@@ -177,7 +177,7 @@ export class Aweber {
         }
 
         params.oauth_token = this.config.accessKey
-        params.oauth_signature = this.getSignature('PATCH',`${this.apiUrl}${endpoint}`,params)
+        params.oauth_signature = this.getSignature('PATCH',`${this.apiUrl}${this.apiUrlVersion}/${endpoint}`,params)
         return this.makeRequest('PATCH', endpoint, params, this.apiUrl, data).then(response => {
             return response.obj
         })
@@ -209,8 +209,7 @@ export class Aweber {
             }
             if(method === "POST"){
                 if(this._debug) console.log(`curl -X POST -H 'Content-Type: application/json' -d '${JSON.stringify(params)}' '${this.apiUrl}${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}'`)
-                //client.post(`/1.0/${endpoint}`,params,(err,req,res,obj) => {
-                client.post(`/1.0/${endpoint}?${Qs.stringify(params)}`,params,(err,req,res,obj) => {
+                client.post(`${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}`,params,(err,req,res,obj) => {
                     if(this._debug) console.log(obj)
                     if(err){
                         if(this._debug) console.error(err)
@@ -223,9 +222,8 @@ export class Aweber {
                 })
             }
             if(method === "PATCH"){
-                if(this._debug) console.log(`curl -X PATCH -H 'Content-Type: application/json' -d '${JSON.stringify(patched_params)}' '${this.apiUrl}${endpoint}?${Qs.stringify(params)}'`)
-                //client.post(`/1.0/${endpoint}`,params,(err,req,res,obj) => {
-                client.patch(`/1.0/${endpoint}?${Qs.stringify(params)}`,patched_params,(err,req,res,obj) => {
+                if(this._debug) console.log(`curl -X PATCH -H 'Content-Type: application/json' -d '${JSON.stringify(patched_params)}' '${this.apiUrl}${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}'`)
+                client.patch(`${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}`,patched_params,(err,req,res,obj) => {
                     if(this._debug) console.log(obj)
                     if(err){
                         if(this._debug) console.error(err)
