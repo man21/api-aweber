@@ -1,6 +1,6 @@
 {
     "name": "api-aweber",
-    "version": "0.5.4",
+    "version": "0.5.5",
     "description": "Unofficial high-level lib for API Aweber",
     "keywords": [
         "Aweber","API","Typescript"

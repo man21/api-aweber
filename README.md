@@ -35,6 +35,6 @@ aweber.addSubscriber(accountId,listId,data).then(ok => {
 
 Docs
 -----
-This lib Doc: [Documentation](docs/index.hyml)
+This lib Doc: [Documentation](docs/index.md)
 
 Aweber official API doc: [Aweber API](https://labs.aweber.com/getting_started/main)
