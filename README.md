@@ -4,7 +4,7 @@ api-aweber
  [![Dependency Status](https://david-dm.org/scippio/api-aweber.svg)](https://david-dm.org/scippio/api-aweber)
  [![devDependency Status](https://david-dm.org/scippio/api-aweber/dev-status.svg)](https://david-dm.org/scippio/api-aweber#info=devDependencies)
 
-Usage
+Quick Usage
 -----
 
 ```!javascript
@@ -32,3 +32,9 @@ aweber.addSubscriber(accountId,listId,data).then(ok => {
 })
 
 ```
+
+Docs
+-----
+This lib Doc: [Documentation](docs/index.hyml)
+
+Aweber official API doc: [Aweber API](https://labs.aweber.com/getting_started/main)

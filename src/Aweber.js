@@ -67,19 +67,24 @@ class Aweber {
         });
     }
     findSubscriberByEmail(accountId, listId, email) {
-        let endpoint = `accounts/${accountId}/lists/${listId}/subscribers`;
+        let endpoint = `accounts/${accountId}`;
         let params = {
+            email: email,
             oauth_consumer_key: this.config.consumerKey,
             oauth_nonce: this.nonce(32),
             oauth_signature_method: 'HMAC-SHA1',
             oauth_timestamp: (new Date()).getTime(),
             oauth_version: '1.0',
-            oauth_token: this.config.accessKey,
-            email: email
+            "ws.op": "findSubscribers",
+            oauth_token: this.config.accessKey
         };
         params.oauth_signature = this.getSignature('GET', `${this.apiUrl}${this.apiUrlVersion}/${endpoint}`, params);
         return this.makeRequest('GET', endpoint, params, this.apiUrl).then(response => {
-            return response.obj.entries[0];
+            if (response.obj.id) {
+                return response.obj;
+            }
+            else
+                throw new Error(response.obj);
         });
     }
     updateSubscriber(accountId, listId, subscriberId, data) {

@@ -150,19 +150,22 @@ export class Aweber {
     }
 
     findSubscriberByEmail(accountId: number, listId: number, email: string): Promise<Subscriber> {
-        let endpoint = `accounts/${accountId}/lists/${listId}/subscribers`
+        let endpoint = `accounts/${accountId}` //`/lists/${listId}/subscribers`
         let params: any = {
+            email: email,
             oauth_consumer_key: this.config.consumerKey,
             oauth_nonce: this.nonce(32),
             oauth_signature_method: 'HMAC-SHA1',
             oauth_timestamp: (new Date()).getTime(),
             oauth_version: '1.0',
-            oauth_token: this.config.accessKey,
-            email: email
+            "ws.op": "findSubscribers",
+            oauth_token: this.config.accessKey
         }
         params.oauth_signature = this.getSignature('GET',`${this.apiUrl}${this.apiUrlVersion}/${endpoint}`,params)
         return this.makeRequest('GET', endpoint, params, this.apiUrl).then(response => {
-            return response.obj.entries[0]
+            if(response.obj.id){
+                return response.obj
+            } else throw new Error(response.obj)
         })
     }
 
@@ -175,7 +178,6 @@ export class Aweber {
             oauth_timestamp: (new Date()).getTime(),
             oauth_version: '1.0'
         }
-
         params.oauth_token = this.config.accessKey
         params.oauth_signature = this.getSignature('PATCH',`${this.apiUrl}${this.apiUrlVersion}/${endpoint}`,params)
         return this.makeRequest('PATCH', endpoint, params, this.apiUrl, data).then(response => {
@@ -268,7 +270,7 @@ export class Aweber {
     // }
 
 
-    getSignature(method: string, url: string, params: any, algo: string = "base64"): string {
+    private getSignature(method: string, url: string, params: any, algo: string = "base64"): string {
         // let data: any
         // let e: any
         let encodedParams: any
@@ -299,7 +301,7 @@ export class Aweber {
         // return hash
     }
 
-    nonce(len: number): string {
+    private nonce(len: number): string {
         // let s: string
         let val: number
         let s: string = ""

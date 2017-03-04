@@ -1,7 +1,7 @@
 {
     "name": "api-aweber",
-    "version": "0.5.2",
-    "description": "Unofficial API Aweber",
+    "version": "0.5.4",
+    "description": "Unofficial high-level lib for API Aweber",
     "keywords": [
         "Aweber","API","Typescript"
     ],
@@ -14,7 +14,8 @@
     "main": "./src/index",
     "types": "./types/index.d.ts",
     "scripts": {
-        "build": "gulp"
+        "build": "gulp",
+        "doc": "gulp doc"
     },
     "dependencies": {
         "bluebird": "^3.4.6",
@@ -25,9 +26,14 @@
         "@types/bluebird": "3.0.37",
         "@types/node": "7.0.5",
         "@types/restify": "2.0.41",
+        "@types/gulp-typedoc": "0.0.29",
         "gulp": "^3.9.1",
         "gulp-typescript": "^3.1.5",
         "typescript": "^2.2.1",
-        "merge2": "^1.0.2"
+        "merge2": "^1.0.2",
+        "typedoc": "^0.5.7",
+        "gulp-typedoc": "^2.0.2",
+        "typedoc-md-theme": "^1.0.1",
+        "gulp-clean": "^0.3.2"
     }
 }

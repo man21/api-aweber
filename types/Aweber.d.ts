@@ -82,6 +82,6 @@ export declare class Aweber {
     findSubscriberByEmail(accountId: number, listId: number, email: string): Promise<Subscriber>;
     updateSubscriber(accountId: number, listId: number, subscriberId: number, data: any): Promise<Subscriber>;
     private makeRequest(method, endpoint, params, url, patched_params?);
-    getSignature(method: string, url: string, params: any, algo?: string): string;
-    nonce(len: number): string;
+    private getSignature(method, url, params, algo?);
+    private nonce(len);
 }
