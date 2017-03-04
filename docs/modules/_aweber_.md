@@ -11,5 +11,5 @@
 * [Method](_aweber_.md#method)
 ## Type aliases
 ### Method: "GET" | "POST" | "DELETE" | "PATCH" | "PUT"
-* Defined in [Aweber.ts:75](https://github.com/scippio/api-aweber/blob/4a43372/src/Aweber.ts#L75)
+* Defined in [Aweber.ts:75](https://github.com/scippio/api-aweber/blob/3f366ef/src/Aweber.ts#L75)
 Generated using [TypeDoc](http://typedoc.io)

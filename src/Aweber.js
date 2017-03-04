@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const Crypto = require("crypto");
 const Restify = require("restify");
-const Qs = require("querystring");
+const Qs = require("qs");
 class Aweber {
     constructor(config) {
         this.apiUrl = "https://api.aweber.com";
@@ -62,7 +62,7 @@ class Aweber {
         });
         params.oauth_token = this.config.accessKey;
         params.oauth_signature = this.getSignature('POST', `${this.apiUrl}${this.apiUrlVersion}/${endpoint}`, params);
-        return this.makeRequest('POST', endpoint, params, this.apiUrl).then(response => {
+        return this.makeRequest('POST', `${endpoint}`, params, this.apiUrl).then(response => {
             return (response.res.statusCode === 201);
         });
     }
@@ -103,10 +103,17 @@ class Aweber {
         });
     }
     makeRequest(method, endpoint, params, url, patched_params) {
-        let client = Restify.createJsonClient({
+        let headers = {};
+        if (method === "PATCH") {
+            headers = {
+                "Content-Type": "application/json"
+            };
+        }
+        let client = Restify.createStringClient({
             url: url,
             requestTimeout: 5000,
-            retry: false
+            retry: false,
+            headers: headers
         });
         return new Promise((resolve, reject) => {
             if (method === "GET") {
@@ -118,45 +125,45 @@ class Aweber {
                     if (err) {
                         if (this._debug)
                             console.error(err);
-                        return reject(obj);
+                        return reject(JSON.parse(obj));
                     }
                     resolve({
                         res: res,
-                        obj: obj
+                        obj: JSON.parse(obj)
                     });
                 });
             }
             if (method === "POST") {
                 if (this._debug)
-                    console.log(`curl -X POST -H 'Content-Type: application/json' -d '${JSON.stringify(params)}' '${this.apiUrl}${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}'`);
-                client.post(`${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}`, params, (err, req, res, obj) => {
+                    console.log(`curl -X POST -d '${Qs.stringify(params)}' '${this.apiUrl}${this.apiUrlVersion}/${endpoint}'`);
+                client.post(`${this.apiUrlVersion}/${endpoint}`, params, (err, req, res, obj) => {
                     if (this._debug)
                         console.log(obj);
                     if (err) {
                         if (this._debug)
                             console.error(err);
-                        return reject(obj);
+                        return reject(JSON.parse(obj));
                     }
                     resolve({
                         res: res,
-                        obj: obj
+                        obj: JSON.parse(obj)
                     });
                 });
             }
             if (method === "PATCH") {
                 if (this._debug)
-                    console.log(`curl -X PATCH -H 'Content-Type: application/json' -d '${JSON.stringify(patched_params)}' '${this.apiUrl}${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}'`);
-                client.patch(`${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}`, patched_params, (err, req, res, obj) => {
+                    console.log(`curl -X PATCH -H 'Content-Type: application/json' -d '${JSON.stringify(patched_params)}' '${this.apiUrl}${this.apiUrlVersion}/${endpoint}}'`);
+                client.patch(`${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}`, JSON.stringify(patched_params), (err, req, res, obj) => {
                     if (this._debug)
                         console.log(obj);
                     if (err) {
                         if (this._debug)
                             console.error(err);
-                        return reject(obj);
+                        return reject(JSON.parse(obj));
                     }
                     resolve({
                         res: res,
-                        obj: obj
+                        obj: JSON.parse(obj)
                     });
                 });
             }

@@ -1,6 +1,6 @@
 {
     "name": "api-aweber",
-    "version": "0.5.7",
+    "version": "0.5.8",
     "description": "Unofficial high-level lib for API Aweber",
     "keywords": [
         "Aweber","API","Typescript"
@@ -20,12 +20,14 @@
     "dependencies": {
         "bluebird": "^3.4.6",
         "restify": "^4.3.0",
-        "aweber-api-nodejs": "^0.0.2"
+        "aweber-api-nodejs": "^0.0.2",
+        "qs": "^6.3.0"
     },
     "devDependencies": {
         "@types/bluebird": "3.0.37",
         "@types/node": "7.0.5",
         "@types/restify": "2.0.41",
+        "@types/qs": "6.2.30",
         "@types/gulp-typedoc": "0.0.29",
         "gulp": "^3.9.1",
         "gulp-typescript": "^3.1.5",

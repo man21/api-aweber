@@ -7,11 +7,11 @@
 * [consumerSecret](_aweber_.aweberconfig.md#consumersecret)
 ## Properties
 ### accessKey: string
-* Defined in [Aweber.ts:9](https://github.com/scippio/api-aweber/blob/4a43372/src/Aweber.ts#L9)
+* Defined in [Aweber.ts:9](https://github.com/scippio/api-aweber/blob/3f366ef/src/Aweber.ts#L9)
 ### accessSecret: string
-* Defined in [Aweber.ts:10](https://github.com/scippio/api-aweber/blob/4a43372/src/Aweber.ts#L10)
+* Defined in [Aweber.ts:10](https://github.com/scippio/api-aweber/blob/3f366ef/src/Aweber.ts#L10)
 ### consumerKey: string
-* Defined in [Aweber.ts:7](https://github.com/scippio/api-aweber/blob/4a43372/src/Aweber.ts#L7)
+* Defined in [Aweber.ts:7](https://github.com/scippio/api-aweber/blob/3f366ef/src/Aweber.ts#L7)
 ### consumerSecret: string
-* Defined in [Aweber.ts:8](https://github.com/scippio/api-aweber/blob/4a43372/src/Aweber.ts#L8)
+* Defined in [Aweber.ts:8](https://github.com/scippio/api-aweber/blob/3f366ef/src/Aweber.ts#L8)
 Generated using [TypeDoc](http://typedoc.io)
