@@ -22,8 +22,9 @@ Gulp.task("doc-clean",() => {
 })
 
 Gulp.task("doc",["doc-clean"],() => {
-  return Gulp.src("src/**/*.ts")
-    .pipe(Typedoc({
+  console.log("\nPlease use: rm -rf docs && node_modules/typedoc-md-theme/bin/typedoc --options typedoc.json --source src/\n")
+  //return Gulp.src("src/**/*.ts")
+  /*  .pipe(Typedoc({
       module: "commonjs",
       target: "es6",
       tsconfig: "tsconfig.json",
@@ -34,7 +35,7 @@ Gulp.task("doc",["doc-clean"],() => {
       excludeExternals: true,
       name: "api-aweber",
       theme: "node_modules/typedoc-md-theme/bin"
-    }))
+    }))*/
 })
 
 Gulp.task("default", ["compile"])

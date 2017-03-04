@@ -163,8 +163,8 @@ export class Aweber {
         }
         params.oauth_signature = this.getSignature('GET',`${this.apiUrl}${this.apiUrlVersion}/${endpoint}`,params)
         return this.makeRequest('GET', endpoint, params, this.apiUrl).then(response => {
-            if(response.obj.id){
-                return response.obj
+            if(response.obj.entries && response.obj.entries.length === 1){
+                return response.obj.entries[0]
             } else throw new Error(response.obj)
         })
     }
