@@ -33,5 +33,7 @@ Docs
 This lib Doc: [Documentation](docs/index.md)
 Aweber official API doc: [Aweber API](https://labs.aweber.com/getting_started/main)
 # Index
-* *[Globals](globals.html)** ["Aweber"](modules/_aweber_.html)* ["index"](modules/_index_.html)
+* *[Globals](globals.md)*
+* ["Aweber"](modules/_aweber_.md)
+* ["index"](modules/_index_.md)
 Generated using [TypeDoc](http://typedoc.io)

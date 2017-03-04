@@ -1,3 +1,6 @@
 #  api-aweber
-## Index### External modules* ["Aweber"](modules/_aweber_.html)* ["index"](modules/_index_.html)
+## Index
+### External modules
+* ["Aweber"](modules/_aweber_.md)
+* ["index"](modules/_index_.md)
 Generated using [TypeDoc](http://typedoc.io)
