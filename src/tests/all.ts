@@ -2,12 +2,22 @@ import * as Should from "should"
 import * as Promise from "bluebird"
 import { Aweber } from "../api/Aweber"
 
-let config = require("./config.json")
+let config: any
 let id: number = 0
 
 describe("Subscriber add/find/update tests", () => {
 
+    before(() => {
+        try {
+            config = require("./config.json")
+        } catch(err){
+            console.error(`    ! ${err.message}. For the tests you must setup config.json like config.example.json.`)
+        }
+    })
+
     it("Get Accounts", function(){
+        if(config === undefined) this.skip()
+
         this.slow(20000)
         let aweber = new Aweber(config)
         return aweber.debug(false).getAccounts().then(response => {
@@ -23,6 +33,8 @@ describe("Subscriber add/find/update tests", () => {
     })
 
     it("Get Lists", function(){
+        if(config === undefined) this.skip()
+
         this.slow(20000)
         let aweber = new Aweber(config)
         return aweber.debug(false).getLists(config.accountId).then(response => {
@@ -49,6 +61,8 @@ describe("Subscriber add/find/update tests", () => {
     })
 
     it("Add Subscriber", function(){
+        if(config === undefined) this.skip()
+
         this.slow(20000)
         let aweber = new Aweber(config)
         return aweber.debug(false).addSubscriber(config.accountId,config.listId,{
@@ -67,6 +81,8 @@ describe("Subscriber add/find/update tests", () => {
     })
 
     it("Find Subscriber by E-mail", function(){
+        if(config === undefined) this.skip()
+
         this.slow(20000)
         let aweber = new Aweber(config)
         return aweber.debug(false).findSubscriberByEmail(config.accountId,"random-test-123@gmail.com").then((response) => {
@@ -81,6 +97,8 @@ describe("Subscriber add/find/update tests", () => {
     })
 
     it("Update Subscriber", function(){
+        if(config === undefined) this.skip()
+
         this.slow(20000)
         let aweber = new Aweber(config)
         return aweber.debug(false).updateSubscriber(config.accountId,config.listId,id,{
@@ -103,6 +121,8 @@ describe("Subscriber add/find/update tests", () => {
     })
 
     it("Add Duplicate subscriber", function(){
+        if(config === undefined) this.skip()
+
         this.slow(20000)
         let aweber = new Aweber(config)
         return aweber.debug(false).addSubscriber(config.accountId,config.listId,{
@@ -128,6 +148,8 @@ describe("Subscriber add/find/update tests", () => {
     })
 
     it("Delete subscriber", function(){
+        if(config === undefined) this.skip()
+
         this.slow(20000)
         let aweber = new Aweber(config)
         return aweber.debug(false).deleteSubscriber(config.accountId,config.listId,id).then(response => {
@@ -136,6 +158,8 @@ describe("Subscriber add/find/update tests", () => {
     })
 
     it("Find non-existent subscriber by E-mail", function(){
+        if(config === undefined) this.skip()
+
         this.slow(20000)
         let aweber = new Aweber(config)
         return aweber.debug(false).findSubscriberByEmail(config.accountId,"non-existent-test-123@gmail.com").then((response) => {

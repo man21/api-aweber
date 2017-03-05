@@ -1,13 +1,24 @@
 "use strict";
-var Should = require("should");
-var Aweber_1 = require("../api/Aweber");
-var config = require("./config.json");
-var id = 0;
-describe("Subscriber add/find/update tests", function () {
+Object.defineProperty(exports, "__esModule", { value: true });
+const Should = require("should");
+const Aweber_1 = require("../api/Aweber");
+let config;
+let id = 0;
+describe("Subscriber add/find/update tests", () => {
+    before(() => {
+        try {
+            config = require("./config.json");
+        }
+        catch (err) {
+            console.error(`    ! ${err.message}. For the tests you must setup config.json like config.example.json.`);
+        }
+    });
     it("Get Accounts", function () {
+        if (config === undefined)
+            this.skip();
         this.slow(20000);
-        var aweber = new Aweber_1.Aweber(config);
-        return aweber.debug(false).getAccounts().then(function (response) {
+        let aweber = new Aweber_1.Aweber(config);
+        return aweber.debug(false).getAccounts().then(response => {
             Should(response).be.an.Array();
             Should(response.length).be.above(0);
             Should(response[0]).has.property("http_etag");
@@ -19,9 +30,11 @@ describe("Subscriber add/find/update tests", function () {
         });
     });
     it("Get Lists", function () {
+        if (config === undefined)
+            this.skip();
         this.slow(20000);
-        var aweber = new Aweber_1.Aweber(config);
-        return aweber.debug(false).getLists(config.accountId).then(function (response) {
+        let aweber = new Aweber_1.Aweber(config);
+        return aweber.debug(false).getLists(config.accountId).then(response => {
             Should(response).be.an.Array();
             Should(response.length).be.above(0);
             Should(response[0]).has.property("total_unconfirmed_subscribers");
@@ -44,8 +57,10 @@ describe("Subscriber add/find/update tests", function () {
         });
     });
     it("Add Subscriber", function () {
+        if (config === undefined)
+            this.skip();
         this.slow(20000);
-        var aweber = new Aweber_1.Aweber(config);
+        let aweber = new Aweber_1.Aweber(config);
         return aweber.debug(false).addSubscriber(config.accountId, config.listId, {
             name: "Random Test",
             email: "random-test-123@gmail.com",
@@ -56,14 +71,16 @@ describe("Subscriber add/find/update tests", function () {
                 "First": "Random",
                 "Last": "Test"
             }
-        }).then(function (response) {
+        }).then((response) => {
             Should(response).be.true();
         });
     });
     it("Find Subscriber by E-mail", function () {
+        if (config === undefined)
+            this.skip();
         this.slow(20000);
-        var aweber = new Aweber_1.Aweber(config);
-        return aweber.debug(false).findSubscriberByEmail(config.accountId, "random-test-123@gmail.com").then(function (response) {
+        let aweber = new Aweber_1.Aweber(config);
+        return aweber.debug(false).findSubscriberByEmail(config.accountId, "random-test-123@gmail.com").then((response) => {
             Should(response).not.be.exactly(null);
             id = response.id;
             Should(response).has.property("id");
@@ -74,8 +91,10 @@ describe("Subscriber add/find/update tests", function () {
         });
     });
     it("Update Subscriber", function () {
+        if (config === undefined)
+            this.skip();
         this.slow(20000);
-        var aweber = new Aweber_1.Aweber(config);
+        let aweber = new Aweber_1.Aweber(config);
         return aweber.debug(false).updateSubscriber(config.accountId, config.listId, id, {
             name: "Random2 ChangeTest",
             email: "random2-testChange-123@gmail.com",
@@ -86,7 +105,7 @@ describe("Subscriber add/find/update tests", function () {
                 "First": "Random2",
                 "Last": "ChangeTest"
             }
-        }).then(function (response) {
+        }).then((response) => {
             Should(response).has.property("id");
             Should(response).has.property("name");
             Should(response).has.property("email");
@@ -95,8 +114,10 @@ describe("Subscriber add/find/update tests", function () {
         });
     });
     it("Add Duplicate subscriber", function () {
+        if (config === undefined)
+            this.skip();
         this.slow(20000);
-        var aweber = new Aweber_1.Aweber(config);
+        let aweber = new Aweber_1.Aweber(config);
         return aweber.debug(false).addSubscriber(config.accountId, config.listId, {
             name: "Random2 ChangeTest",
             email: "random2-testchange-123@gmail.com",
@@ -107,9 +128,9 @@ describe("Subscriber add/find/update tests", function () {
                 "First": "Random2",
                 "Last": "ChangeTest"
             }
-        }).then(function (response) {
+        }).then((response) => {
             throw new Error("Duplicity not found.");
-        }).catch(function (err) {
+        }).catch(err => {
             Should(err.res).has.property("statusCode");
             Should(err.res.statusCode).be.exactly(400);
             Should(err.obj).has.property("error");
@@ -119,16 +140,20 @@ describe("Subscriber add/find/update tests", function () {
         });
     });
     it("Delete subscriber", function () {
+        if (config === undefined)
+            this.skip();
         this.slow(20000);
-        var aweber = new Aweber_1.Aweber(config);
-        return aweber.debug(false).deleteSubscriber(config.accountId, config.listId, id).then(function (response) {
+        let aweber = new Aweber_1.Aweber(config);
+        return aweber.debug(false).deleteSubscriber(config.accountId, config.listId, id).then(response => {
             Should(response).be.exactly(true);
         });
     });
     it("Find non-existent subscriber by E-mail", function () {
+        if (config === undefined)
+            this.skip();
         this.slow(20000);
-        var aweber = new Aweber_1.Aweber(config);
-        return aweber.debug(false).findSubscriberByEmail(config.accountId, "non-existent-test-123@gmail.com").then(function (response) {
+        let aweber = new Aweber_1.Aweber(config);
+        return aweber.debug(false).findSubscriberByEmail(config.accountId, "non-existent-test-123@gmail.com").then((response) => {
             Should(response).be.exactly(null);
         });
     });
