@@ -1,25 +1,26 @@
 "use strict";
-var Promise = require("bluebird");
-var Crypto = require("crypto");
-var Restify = require("restify");
-var Qs = require("qs");
-var Aweber = (function () {
-    function Aweber(config) {
+Object.defineProperty(exports, "__esModule", { value: true });
+const Promise = require("bluebird");
+const Crypto = require("crypto");
+const Restify = require("restify");
+const Qs = require("qs");
+class Aweber {
+    constructor(config) {
         this.apiUrl = "https://api.aweber.com";
         this.apiUrlVersion = "/1.0";
         this._debug = false;
         this.config = config;
     }
-    Aweber.prototype.debug = function (dbg) {
+    debug(dbg) {
         this._debug = dbg;
         return this;
-    };
+    }
     // TODO: oauth params here
     // private oauthParams(): any {
     // }
-    Aweber.prototype.getAccounts = function () {
-        var endpoint = "accounts";
-        var params = {
+    getAccounts() {
+        let endpoint = `accounts`;
+        let params = {
             oauth_consumer_key: this.config.consumerKey,
             oauth_nonce: this.nonce(32),
             oauth_signature_method: 'HMAC-SHA1',
@@ -27,14 +28,14 @@ var Aweber = (function () {
             oauth_version: '1.0',
             oauth_token: this.config.accessKey
         };
-        params.oauth_signature = this.getSignature('GET', "" + this.apiUrl + this.apiUrlVersion + "/" + endpoint, params);
-        return this.makeRequest('GET', endpoint, params, this.apiUrl).then(function (response) {
+        params.oauth_signature = this.getSignature('GET', `${this.apiUrl}${this.apiUrlVersion}/${endpoint}`, params);
+        return this.makeRequest('GET', endpoint, params, this.apiUrl).then(response => {
             return response.obj.entries;
         });
-    };
-    Aweber.prototype.getLists = function (accountId) {
-        var endpoint = "accounts/" + accountId + "/lists";
-        var params = {
+    }
+    getLists(accountId) {
+        let endpoint = `accounts/${accountId}/lists`;
+        let params = {
             oauth_consumer_key: this.config.consumerKey,
             oauth_nonce: this.nonce(32),
             oauth_signature_method: 'HMAC-SHA1',
@@ -42,14 +43,14 @@ var Aweber = (function () {
             oauth_version: '1.0',
             oauth_token: this.config.accessKey
         };
-        params.oauth_signature = this.getSignature('GET', "" + this.apiUrl + this.apiUrlVersion + "/" + endpoint, params);
-        return this.makeRequest('GET', endpoint, params, this.apiUrl).then(function (response) {
+        params.oauth_signature = this.getSignature('GET', `${this.apiUrl}${this.apiUrlVersion}/${endpoint}`, params);
+        return this.makeRequest('GET', endpoint, params, this.apiUrl).then(response => {
             return response.obj.entries;
         });
-    };
-    Aweber.prototype.addSubscriber = function (accountId, listId, data) {
-        var endpoint = "accounts/" + accountId + "/lists/" + listId + "/subscribers";
-        var params = {
+    }
+    addSubscriber(accountId, listId, data) {
+        let endpoint = `accounts/${accountId}/lists/${listId}/subscribers`;
+        let params = {
             "ws.op": "create",
             oauth_consumer_key: this.config.consumerKey,
             oauth_nonce: this.nonce(32),
@@ -57,21 +58,21 @@ var Aweber = (function () {
             oauth_timestamp: (new Date()).getTime(),
             oauth_version: '1.0'
         };
-        Object.keys(data).forEach(function (key) {
+        Object.keys(data).forEach((key) => {
             if (key === "custom_fields")
                 params[key] = JSON.stringify(data[key]);
             else
                 params[key] = data[key];
         });
         params.oauth_token = this.config.accessKey;
-        params.oauth_signature = this.getSignature('POST', "" + this.apiUrl + this.apiUrlVersion + "/" + endpoint, params);
-        return this.makeRequest('POST', "" + endpoint, params, this.apiUrl).then(function (response) {
+        params.oauth_signature = this.getSignature('POST', `${this.apiUrl}${this.apiUrlVersion}/${endpoint}`, params);
+        return this.makeRequest('POST', `${endpoint}`, params, this.apiUrl).then(response => {
             return (response.res.statusCode === 201);
         });
-    };
-    Aweber.prototype.findSubscriberByEmail = function (accountId, email) {
-        var endpoint = "accounts/" + accountId; //`/lists/${listId}/subscribers`
-        var params = {
+    }
+    findSubscriberByEmail(accountId, email) {
+        let endpoint = `accounts/${accountId}`; //`/lists/${listId}/subscribers`
+        let params = {
             "ws.op": "findSubscribers",
             email: email,
             oauth_consumer_key: this.config.consumerKey,
@@ -81,18 +82,18 @@ var Aweber = (function () {
             oauth_version: '1.0',
             oauth_token: this.config.accessKey
         };
-        params.oauth_signature = this.getSignature('GET', "" + this.apiUrl + this.apiUrlVersion + "/" + endpoint, params);
-        return this.makeRequest('GET', endpoint, params, this.apiUrl).then(function (response) {
+        params.oauth_signature = this.getSignature('GET', `${this.apiUrl}${this.apiUrlVersion}/${endpoint}`, params);
+        return this.makeRequest('GET', endpoint, params, this.apiUrl).then(response => {
             if (response.obj.entries) {
                 if (response.obj.entries.length === 1)
                     return response.obj.entries[0];
                 return null;
             }
         });
-    };
-    Aweber.prototype.updateSubscriber = function (accountId, listId, subscriberId, data) {
-        var endpoint = "accounts/" + accountId + "/lists/" + listId + "/subscribers/" + subscriberId;
-        var params = {
+    }
+    updateSubscriber(accountId, listId, subscriberId, data) {
+        let endpoint = `accounts/${accountId}/lists/${listId}/subscribers/${subscriberId}`;
+        let params = {
             oauth_consumer_key: this.config.consumerKey,
             oauth_nonce: this.nonce(32),
             oauth_signature_method: 'HMAC-SHA1',
@@ -100,15 +101,15 @@ var Aweber = (function () {
             oauth_version: '1.0',
             oauth_token: this.config.accessKey
         };
-        params.oauth_signature = this.getSignature('PATCH', "" + this.apiUrl + this.apiUrlVersion + "/" + endpoint, params);
-        return this.makeRequest('PATCH', endpoint, params, this.apiUrl, data).then(function (response) {
+        params.oauth_signature = this.getSignature('PATCH', `${this.apiUrl}${this.apiUrlVersion}/${endpoint}`, params);
+        return this.makeRequest('PATCH', endpoint, params, this.apiUrl, data).then(response => {
             if (response.res.statusCode === 209)
                 return response.obj;
         });
-    };
-    Aweber.prototype.deleteSubscriber = function (accountId, listId, subscriberId) {
-        var endpoint = "accounts/" + accountId + "/lists/" + listId + "/subscribers/" + subscriberId;
-        var params = {
+    }
+    deleteSubscriber(accountId, listId, subscriberId) {
+        let endpoint = `accounts/${accountId}/lists/${listId}/subscribers/${subscriberId}`;
+        let params = {
             oauth_consumer_key: this.config.consumerKey,
             oauth_nonce: this.nonce(32),
             oauth_signature_method: 'HMAC-SHA1',
@@ -117,14 +118,13 @@ var Aweber = (function () {
             "ws.op": "archive",
             oauth_token: this.config.accessKey
         };
-        params.oauth_signature = this.getSignature('DELETE', "" + this.apiUrl + this.apiUrlVersion + "/" + endpoint, params);
-        return this.makeRequest('DELETE', endpoint, params, this.apiUrl).then(function (response) {
+        params.oauth_signature = this.getSignature('DELETE', `${this.apiUrl}${this.apiUrlVersion}/${endpoint}`, params);
+        return this.makeRequest('DELETE', endpoint, params, this.apiUrl).then(response => {
             return (response.res.statusCode === 200);
         });
-    };
-    Aweber.prototype.makeRequest = function (method, endpoint, params, url, patched_params) {
-        var _this = this;
-        var client;
+    }
+    makeRequest(method, endpoint, params, url, patched_params) {
+        let client;
         if (method === "PATCH") {
             client = Restify.createJsonClient({
                 url: url,
@@ -139,18 +139,18 @@ var Aweber = (function () {
                 retry: false
             });
         }
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
             if (method === "GET") {
                 /* istanbul ignore if  */
-                if (_this._debug)
-                    console.log("curl '" + _this.apiUrl + _this.apiUrlVersion + "/" + endpoint + "?" + Qs.stringify(params) + "'");
-                client.get("" + _this.apiUrl + _this.apiUrlVersion + "/" + endpoint + "?" + Qs.stringify(params), function (err, req, res, obj) {
+                if (this._debug)
+                    console.log(`curl '${this.apiUrl}${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}'`);
+                client.get(`${this.apiUrl}${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}`, (err, req, res, obj) => {
                     /* istanbul ignore if  */
-                    if (_this._debug)
+                    if (this._debug)
                         console.log(obj);
                     if (err) {
                         /* istanbul ignore if  */
-                        if (_this._debug)
+                        if (this._debug)
                             console.error(err);
                         return reject({
                             res: res,
@@ -165,17 +165,17 @@ var Aweber = (function () {
             }
             if (method === "POST") {
                 /* istanbul ignore if  */
-                if (_this._debug)
-                    console.log("curl -X POST -d '" + Qs.stringify(params) + "' '" + _this.apiUrl + _this.apiUrlVersion + "/" + endpoint + "'");
-                client.post(_this.apiUrlVersion + "/" + endpoint, params, function (err, req, res, obj) {
+                if (this._debug)
+                    console.log(`curl -X POST -d '${Qs.stringify(params)}' '${this.apiUrl}${this.apiUrlVersion}/${endpoint}'`);
+                client.post(`${this.apiUrlVersion}/${endpoint}`, params, (err, req, res, obj) => {
                     if (obj !== "" && obj !== null)
                         obj = JSON.parse(obj);
                     /* istanbul ignore if  */
-                    if (_this._debug)
+                    if (this._debug)
                         console.log(obj);
                     if (err) {
                         /* istanbul ignore if  */
-                        if (_this._debug)
+                        if (this._debug)
                             console.error(err);
                         return reject({
                             res: res,
@@ -190,15 +190,15 @@ var Aweber = (function () {
             }
             if (method === "PATCH") {
                 /* istanbul ignore if  */
-                if (_this._debug)
-                    console.log("curl -X PATCH -H 'Content-Type: application/json' -d '" + JSON.stringify(patched_params) + "' '" + _this.apiUrl + _this.apiUrlVersion + "/" + endpoint + "?" + Qs.stringify(params) + "'");
-                client.patch(_this.apiUrlVersion + "/" + endpoint + "?" + Qs.stringify(params), patched_params, function (err, req, res, obj) {
+                if (this._debug)
+                    console.log(`curl -X PATCH -H 'Content-Type: application/json' -d '${JSON.stringify(patched_params)}' '${this.apiUrl}${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}'`);
+                client.patch(`${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}`, patched_params, (err, req, res, obj) => {
                     /* istanbul ignore if  */
-                    if (_this._debug)
+                    if (this._debug)
                         console.log(obj);
                     if (err) {
                         /* istanbul ignore if  */
-                        if (_this._debug)
+                        if (this._debug)
                             console.error(err);
                         return reject({
                             res: res,
@@ -213,15 +213,15 @@ var Aweber = (function () {
             }
             if (method === "DELETE") {
                 /* istanbul ignore if  */
-                if (_this._debug)
-                    console.log("curl -X DELETE '" + _this.apiUrl + _this.apiUrlVersion + "/" + endpoint + "?" + Qs.stringify(params) + "'");
-                client.del("" + _this.apiUrl + _this.apiUrlVersion + "/" + endpoint + "?" + Qs.stringify(params), function (err, req, res) {
+                if (this._debug)
+                    console.log(`curl -X DELETE '${this.apiUrl}${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}'`);
+                client.del(`${this.apiUrl}${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}`, (err, req, res) => {
                     /* istanbul ignore if  */
-                    if (_this._debug)
+                    if (this._debug)
                         console.log(res);
                     if (err) {
                         /* istanbul ignore if  */
-                        if (_this._debug)
+                        if (this._debug)
                             console.error(err);
                         return reject({
                             res: res
@@ -233,7 +233,7 @@ var Aweber = (function () {
                 });
             }
         });
-    };
+    }
     // accessToken(oauthToken: string, oauthVerifier: string, tokenSecret: string): Promise<any> {
     //     let url = 'https://auth.aweber.com/1.0/oauth/access_token'
     //     let params: any = {
@@ -262,15 +262,14 @@ var Aweber = (function () {
     //     })
     //     //putOrPost('post', url, params, callback)
     // }
-    Aweber.prototype.getSignature = function (method, url, params, algo) {
-        if (algo === void 0) { algo = "base64"; }
+    getSignature(method, url, params, algo = "base64") {
         // let data: any
         // let e: any
-        var encodedParams;
+        let encodedParams;
         // let hash: string
         // let key: string
-        var paramString;
-        var sorted; //{[key: string]: string}
+        let paramString;
+        let sorted; //{[key: string]: string}
         // let text: string
         // if(token_secret == null){
         //     token_secret = ""
@@ -278,24 +277,24 @@ var Aweber = (function () {
         // if(algo == undefined){
         //     algo = "base64"
         // }
-        var e = encodeURIComponent;
+        let e = encodeURIComponent;
         sorted = Object.keys(params).sort();
         encodedParams = [];
-        sorted.map(function (s) {
+        sorted.map((s) => {
             return encodedParams.push([s, '=', e(params[s])].join(''));
         });
         paramString = e(encodedParams.join('&'));
-        var data = [method, e(url), paramString].join('&');
-        var key = [e(this.config.consumerSecret), e(this.config.accessSecret)].join('&');
+        let data = [method, e(url), paramString].join('&');
+        let key = [e(this.config.consumerSecret), e(this.config.accessSecret)].join('&');
         // text = data
         // key = key
         return Crypto.createHmac('sha1', key).update(data).digest(algo);
         // return hash
-    };
-    Aweber.prototype.nonce = function (len) {
+    }
+    nonce(len) {
         // let s: string
-        var val;
-        var s = "";
+        let val;
+        let s = "";
         while (s.length < len) {
             val = Math.floor(Math.random() * 2);
             if (val === 0) {
@@ -306,7 +305,6 @@ var Aweber = (function () {
             }
         }
         return s;
-    };
-    return Aweber;
-}());
+    }
+}
 exports.Aweber = Aweber;

@@ -19,7 +19,16 @@ Gulp.task("compile-source", () => {
     ])
 })
 
-Gulp.task("compile-tests", ["compile-source"], () => {
+Gulp.task("compile",["compile-source"],() => {
+    let res = Gulp.src("src/*.ts")
+        .pipe(TsProject());
+    return Merge([
+        res.js.pipe(Gulp.dest("src")),
+        res.dts.pipe(Gulp.dest("types"))
+    ])
+})
+
+Gulp.task("compile-tests", ["compile"], () => {
     //let res = TsProject.src()
     let res = Gulp.src("src/tests/**/*.ts")
         .pipe(TsProjectTests());
@@ -68,4 +77,4 @@ Gulp.task("doc",["doc-clean"],() => {
     }))*/
 })
 
-Gulp.task("default", ["compile-source"])
+Gulp.task("default", ["compile"])
