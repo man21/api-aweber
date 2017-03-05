@@ -24,7 +24,7 @@ Gulp.task("compile",["compile-source"],() => {
         .pipe(TsProject());
     return Merge([
         res.js.pipe(Gulp.dest("src")),
-        res.dts.pipe(Gulp.dest("types"))
+        res.dts.pipe(Gulp.dest("."))
     ])
 })
 
