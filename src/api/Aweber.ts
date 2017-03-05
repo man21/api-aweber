@@ -91,9 +91,9 @@ export class Aweber {
         return this
     }
 
-    private oauthParams(): any {
-
-    }
+    // TODO: oauth params here
+    // private oauthParams(): any {
+    // }
 
     getAccounts(): Promise<Array<Account>> {
         let endpoint = `accounts`
@@ -105,7 +105,7 @@ export class Aweber {
             oauth_version: '1.0',
             oauth_token: this.config.accessKey
         }
-        params.oauth_signature = this.getSignature('GET',`${this.apiUrl}${endpoint}`,params)
+        params.oauth_signature = this.getSignature('GET',`${this.apiUrl}${this.apiUrlVersion}/${endpoint}`,params)
         return this.makeRequest('GET', endpoint, params, this.apiUrl).then(response => {
             return response.obj.entries
         })
@@ -121,7 +121,7 @@ export class Aweber {
             oauth_version: '1.0',
             oauth_token: this.config.accessKey
         }
-        params.oauth_signature = this.getSignature('GET',`${this.apiUrl}${endpoint}`,params)
+        params.oauth_signature = this.getSignature('GET',`${this.apiUrl}${this.apiUrlVersion}/${endpoint}`,params)
         return this.makeRequest('GET', endpoint, params, this.apiUrl).then(response => {
             return response.obj.entries
         })
@@ -130,16 +130,17 @@ export class Aweber {
     addSubscriber(accountId: number, listId: number, data: any): Promise<boolean> {
         let endpoint = `accounts/${accountId}/lists/${listId}/subscribers`
         let params: any = {
+            "ws.op": "create",
             oauth_consumer_key: this.config.consumerKey,
             oauth_nonce: this.nonce(32),
             oauth_signature_method: 'HMAC-SHA1',
             oauth_timestamp: (new Date()).getTime(),
-            oauth_version: '1.0',
-            "ws.op": "create"
+            oauth_version: '1.0'
         }
 
         Object.keys(data).forEach((key) => {
-            params[key] = data[key]
+            if(key === "custom_fields") params[key] = JSON.stringify(data[key])
+            else params[key] = data[key]
         })
 
         params.oauth_token = this.config.accessKey
@@ -149,23 +150,24 @@ export class Aweber {
         })
     }
 
-    findSubscriberByEmail(accountId: number, listId: number, email: string): Promise<Subscriber> {
+    findSubscriberByEmail(accountId: number, email: string): Promise<Subscriber | null> {
         let endpoint = `accounts/${accountId}` //`/lists/${listId}/subscribers`
         let params: any = {
+            "ws.op": "findSubscribers",
             email: email,
             oauth_consumer_key: this.config.consumerKey,
             oauth_nonce: this.nonce(32),
             oauth_signature_method: 'HMAC-SHA1',
             oauth_timestamp: (new Date()).getTime(),
             oauth_version: '1.0',
-            "ws.op": "findSubscribers",
             oauth_token: this.config.accessKey
         }
         params.oauth_signature = this.getSignature('GET',`${this.apiUrl}${this.apiUrlVersion}/${endpoint}`,params)
         return this.makeRequest('GET', endpoint, params, this.apiUrl).then(response => {
-            if(response.obj.entries && response.obj.entries.length === 1){
-                return response.obj.entries[0]
-            } else throw new Error(response.obj)
+            if(response.obj.entries){
+                if(response.obj.entries.length === 1) return response.obj.entries[0]
+                return null
+            }
         })
     }
 
@@ -176,39 +178,62 @@ export class Aweber {
             oauth_nonce: this.nonce(32),
             oauth_signature_method: 'HMAC-SHA1',
             oauth_timestamp: (new Date()).getTime(),
-            oauth_version: '1.0'
+            oauth_version: '1.0',
+            oauth_token: this.config.accessKey
         }
-        params.oauth_token = this.config.accessKey
         params.oauth_signature = this.getSignature('PATCH',`${this.apiUrl}${this.apiUrlVersion}/${endpoint}`,params)
         return this.makeRequest('PATCH', endpoint, params, this.apiUrl, data).then(response => {
-            return response.obj
+            if(response.res.statusCode === 209) return response.obj
+        })
+    }
+
+    deleteSubscriber(accountId: number, listId: number, subscriberId: number): Promise<boolean> {
+        let endpoint = `accounts/${accountId}/lists/${listId}/subscribers/${subscriberId}`
+        let params: any = {
+            oauth_consumer_key: this.config.consumerKey,
+            oauth_nonce: this.nonce(32),
+            oauth_signature_method: 'HMAC-SHA1',
+            oauth_timestamp: (new Date()).getTime(),
+            oauth_version: '1.0',
+            "ws.op": "archive",
+            oauth_token: this.config.accessKey
+        }
+        params.oauth_signature = this.getSignature('DELETE',`${this.apiUrl}${this.apiUrlVersion}/${endpoint}`,params)
+        return this.makeRequest('DELETE', endpoint, params, this.apiUrl).then(response => {
+            return (response.res.statusCode === 200)
         })
     }
 
     private makeRequest(method: Method, endpoint: string, params: any, url: string, patched_params?: any): Promise<any> {
-
-        let headers = {}
+        let client: Restify.Client
         if(method === "PATCH"){
-            headers = {
-                "Content-Type": "application/json"
-            }
+            client = Restify.createJsonClient({
+                url: url,
+                requestTimeout: 20000,
+                retry: false
+            })
+        } else {
+            client = Restify.createStringClient({
+                url: url,
+                requestTimeout: 20000,
+                retry: false
+            })
         }
-
-        let client = Restify.createStringClient({
-            url: url,
-            requestTimeout: 5000,
-            retry: false,
-            headers: headers
-        })
 
         return new Promise((resolve,reject) => {
             if(method === "GET"){
+                /* istanbul ignore if  */
                 if(this._debug) console.log(`curl '${this.apiUrl}${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}'`)
                 client.get(`${this.apiUrl}${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}`,(err,req,res,obj) => {
+                    /* istanbul ignore if  */
                     if(this._debug) console.log(obj)
                     if(err){
+                        /* istanbul ignore if  */
                         if(this._debug) console.error(err)
-                        return reject(JSON.parse(obj))
+                        return reject({
+                            res: res,
+                            obj: JSON.parse(obj)
+                        })
                     }
                     resolve({
                         res: res,
@@ -217,30 +242,61 @@ export class Aweber {
                 })
             }
             if(method === "POST"){
+                /* istanbul ignore if  */
                 if(this._debug) console.log(`curl -X POST -d '${Qs.stringify(params)}' '${this.apiUrl}${this.apiUrlVersion}/${endpoint}'`)
                 client.post(`${this.apiUrlVersion}/${endpoint}`,params,(err,req,res,obj) => {
+                    if(obj !== "" && obj !== null) obj = JSON.parse(obj)
+                    /* istanbul ignore if  */
                     if(this._debug) console.log(obj)
                     if(err){
+                        /* istanbul ignore if  */
                         if(this._debug) console.error(err)
-                        return reject(JSON.parse(obj))
+                        return reject({
+                            res: res,
+                            obj: obj
+                        })
                     }
                     resolve({
                         res: res,
-                        obj: JSON.parse(obj)
+                        obj: obj
                     })
                 })
             }
             if(method === "PATCH"){
-                if(this._debug) console.log(`curl -X PATCH -H 'Content-Type: application/json' -d '${JSON.stringify(patched_params)}' '${this.apiUrl}${this.apiUrlVersion}/${endpoint}}'`)
-                client.patch(`${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}`,JSON.stringify(patched_params),(err,req,res,obj) => {
+                /* istanbul ignore if  */
+                if(this._debug) console.log(`curl -X PATCH -H 'Content-Type: application/json' -d '${JSON.stringify(patched_params)}' '${this.apiUrl}${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}'`)
+                client.patch(`${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}`,patched_params,(err,req,res,obj) => {
+                    /* istanbul ignore if  */
                     if(this._debug) console.log(obj)
                     if(err){
+                        /* istanbul ignore if  */
                         if(this._debug) console.error(err)
-                        return reject(JSON.parse(obj))
+                        return reject({
+                            res: res,
+                            obj: obj
+                        })
                     }
                     resolve({
                         res: res,
-                        obj: JSON.parse(obj)
+                        obj: obj
+                    })
+                })
+            }
+            if(method === "DELETE"){
+                /* istanbul ignore if  */
+                if(this._debug) console.log(`curl -X DELETE '${this.apiUrl}${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}'`)
+                client.del(`${this.apiUrl}${this.apiUrlVersion}/${endpoint}?${Qs.stringify(params)}`,(err,req,res) => {
+                    /* istanbul ignore if  */
+                    if(this._debug) console.log(res)
+                    if(err){
+                        /* istanbul ignore if  */
+                        if(this._debug) console.error(err)
+                        return reject({
+                            res: res
+                        })
+                    }
+                    resolve({
+                        res: res
                     })
                 })
             }

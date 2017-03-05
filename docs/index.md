@@ -34,6 +34,7 @@ This lib Doc: [Documentation](docs/index.md)
 Aweber official API doc: [Aweber API](https://labs.aweber.com/getting_started/main)
 # Index
 * *[Globals](globals.md)*
-* ["Aweber"](modules/_aweber_.md)
+* ["api/Aweber"](modules/_api_aweber_.md)
 * ["index"](modules/_index_.md)
+* ["tests/subscriber_add_find_update"](modules/_tests_subscriber_add_find_update_.md)
 Generated using [TypeDoc](http://typedoc.io)

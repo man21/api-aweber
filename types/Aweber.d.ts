@@ -75,12 +75,12 @@ export declare class Aweber {
     private _debug;
     constructor(config: AweberConfig);
     debug(dbg: boolean): this;
-    private oauthParams();
     getAccounts(): Promise<Array<Account>>;
     getLists(accountId: number): Promise<Array<List>>;
     addSubscriber(accountId: number, listId: number, data: any): Promise<boolean>;
-    findSubscriberByEmail(accountId: number, listId: number, email: string): Promise<Subscriber>;
+    findSubscriberByEmail(accountId: number, email: string): Promise<Subscriber | null>;
     updateSubscriber(accountId: number, listId: number, subscriberId: number, data: any): Promise<Subscriber>;
+    deleteSubscriber(accountId: number, listId: number, subscriberId: number): Promise<boolean>;
     private makeRequest(method, endpoint, params, url, patched_params?);
     private getSignature(method, url, params, algo?);
     private nonce(len);
