@@ -8,6 +8,7 @@ const Istanbul = require("gulp-istanbul")
 const Mocha = require("gulp-mocha")
 
 let TsProject = GulpTypescript.createProject("tsconfig.json")
+let TsProjectIndex = GulpTypescript.createProject("tsconfig.json")
 let TsProjectTests = GulpTypescript.createProject("tsconfig.json")
 
 Gulp.task("compile-source", () => {
@@ -15,16 +16,16 @@ Gulp.task("compile-source", () => {
         .pipe(TsProject());
     return Merge([
         res.js.pipe(Gulp.dest("src/api")),
-        res.dts.pipe(Gulp.dest("types"))
+        res.dts.pipe(Gulp.dest("types/api"))
     ])
 })
 
 Gulp.task("compile",["compile-source"],() => {
     let res = Gulp.src("src/*.ts")
-        .pipe(TsProject());
+        .pipe(TsProjectIndex());
     return Merge([
         res.js.pipe(Gulp.dest("src")),
-        res.dts.pipe(Gulp.dest("."))
+        res.dts.pipe(Gulp.dest("types"))
     ])
 })
 
