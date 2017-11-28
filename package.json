@@ -1,6 +1,6 @@
 {
     "name": "api-aweber",
-    "version": "0.6.4",
+    "version": "0.6.5",
     "description": "Unofficial high-level lib for API Aweber",
     "keywords": [
         "Aweber","API","Typescript"
@@ -19,9 +19,9 @@
         "test": "gulp test"
     },
     "dependencies": {
-        "bluebird": "^3.4.6",
-        "restify": "^4.3.0",
-        "qs": "^6.3.0"
+        "bluebird": "3.4.6",
+        "restify": "4.3.0",
+        "qs": "6.3.0"
     },
     "devDependencies": {
         "@types/bluebird": "3.0.37",
@@ -32,17 +32,17 @@
         "@types/mocha": "2.2.39",
         "@types/istanbul": "0.4.29",
         "@types/should": "8.1.30",
-        "gulp": "^3.9.1",
-        "gulp-typescript": "^3.1.5",
-        "typescript": "^2.2.1",
-        "merge2": "^1.0.2",
-        "typedoc": "^0.5.7",
-        "gulp-typedoc": "^2.0.2",
-        "typedoc-md-theme": "^1.0.1",
-        "gulp-clean": "^0.3.2",
-        "mocha": "^3.2.0",
-        "istanbul": "^0.4.5",
-        "should": "^11.2.0",
+        "gulp": "3.9.1",
+        "gulp-typescript": "3.1.5",
+        "typescript": "2.2.1",
+        "merge2": "1.0.2",
+        "typedoc": "0.5.7",
+        "gulp-typedoc": "2.0.2",
+        "typedoc-md-theme": "1.0.1",
+        "gulp-clean": "0.3.2",
+        "mocha": "3.2.0",
+        "istanbul": "0.4.5",
+        "should": "11.2.0",
         "gulp-istanbul": "1.1.1",
         "gulp-mocha": "3.0.1"
     }

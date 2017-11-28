@@ -61,7 +61,7 @@ describe("Subscriber add/find/update tests", () => {
             this.skip();
         this.slow(20000);
         let aweber = new Aweber_1.Aweber(config);
-        return aweber.debug(false).addSubscriber(config.accountId, config.listId, {
+        return aweber.debug(true).addSubscriber(config.accountId, config.listId, {
             name: "Random Test",
             email: "random-test-123@gmail.com",
             ip_address: "10.20.30.40",

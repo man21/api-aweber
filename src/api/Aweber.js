@@ -59,7 +59,9 @@ class Aweber {
             oauth_version: '1.0'
         };
         Object.keys(data).forEach((key) => {
-            if (key === "custom_fields")
+            if (key === "name" && data[key].indexOf("*") >= 0)
+                throw new Error("Name field can't contain asterix character!");
+            else if (key === "custom_fields")
                 params[key] = JSON.stringify(data[key]);
             else
                 params[key] = data[key];
