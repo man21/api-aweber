@@ -59,8 +59,10 @@ class Aweber {
             oauth_version: '1.0'
         };
         Object.keys(data).forEach((key) => {
-            if (key === "name" && data[key].indexOf("*") >= 0)
-                throw new Error("Name field can't contain asterix character!");
+            if (key === "name" && (data[key].indexOf("*") >= 0 || data[key].indexOf("'") >= 0 || data[key].indexOf("!") >= 0))
+                throw new Error("Name field contains bad character!");
+            else if (key === "email" && (data[key].indexOf("*") >= 0 || data[key].indexOf("'") >= 0 || data[key].indexOf("!") >= 0))
+                throw new Error("Email field contains bad character!");
             else if (key === "custom_fields")
                 params[key] = JSON.stringify(data[key]);
             else
